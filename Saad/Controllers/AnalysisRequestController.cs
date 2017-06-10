@@ -127,7 +127,13 @@ namespace Saad.Controllers {
 
                 mail.To.Add(new MailAddress(request.Supplier.MainContactEmail));
                 mail.Subject = "Dados para Acesso ao SAAD Consult";
-                mail.Body = string.Format("<html><body><p>Dados de acesso</p><p>Login: {0}</p><p>Senha: {1}</p></body></html>", request.Supplier.MainContactEmail, password);
+
+                string additionalData = string.Empty;
+                if (request.Type == AnalysisRequest.MonthlyAnalysis && request.Customer.Id == 1) { //alphaville
+                    additionalData = "<p>Clique <a href='https://restrito.saadconsult.com.br/Content/docs/alphaville_tutorial.pdf'>aqui</a> e confira o anexo contendo a relação de documentos necessários e um tutorial para utilização da ferramenta.</p>";
+                }
+
+                mail.Body = string.Format("<html><body><p>Dados de acesso</p><p>Login: {0}</p><p>Senha: {1}</p>{2}</body></html>", request.Supplier.MainContactEmail, password, additionalData);
                 client.Send(mail);
 
             }

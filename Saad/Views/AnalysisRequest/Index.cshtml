@@ -52,10 +52,7 @@
                                     </div>
                                 </div>
                                 <div class="form-group">
-                                    <label class="control-label col-md-2">Serviço</label>
-                                    <div class="col-md-5 input-group">
-                                        <input type="text" id="service" name="service" placeholder="Serviço" class="form-control" value="@ViewBag.CurrentSearchService">
-                                    </div>
+
                                 </div>
                                 <div class="form-group">
                                     <label class="control-label col-md-2">Tipo</label>
@@ -83,6 +80,12 @@
                                             <option value="@AnalysisRequestStatus.ApprovedWithReservationsLevel2.Value" selected="@(AnalysisRequestStatus.ApprovedWithReservationsLevel2.Value == ViewBag.CurrentSearchStatus)">@AnalysisRequestStatus.ApprovedWithReservationsLevel2.Name</option>
                                             <option value="@AnalysisRequestStatus.Disapproved.Value" selected="@(AnalysisRequestStatus.Disapproved.Value == ViewBag.CurrentSearchStatus)">@AnalysisRequestStatus.Disapproved.Name</option>
                                         </select>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-2 control-label">Obra:</label>
+                                    <div class="col-sm-5 input-group">
+                                        @Html.DropDownList("Work", @Html.GetWorks(), "Selecione", new { @class = "form-control" })
                                     </div>
                                 </div>
                                 <div class="form-group">

@@ -1196,6 +1196,7 @@
     <Content Include="locales\en.json" />
     <Content Include="locales\es.json" />
     <Content Include="Scripts\api\typehead_collection.json" />
+    <Content Include="Content\docs\alphaville_tutorial.pdf" />
     <None Include="Properties\PublishProfiles\amazon.pubxml" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\jquery-1.10.2.js" />
