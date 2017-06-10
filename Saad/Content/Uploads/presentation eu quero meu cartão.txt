@@ -1,0 +1,69 @@
+Idéias para treinamento 
+
+"Eu quero o meu cartão"
+
+- Canais de origem
+	- Resgate de Pontos
+	- B2C/ B2B2C
+	- Loyalty
+	- Governo
+	- API V3
+
+- O que é um canal?
+	Atributos de um canal
+	- Nome
+	- Tipo
+	- Tipo de Venda
+	- Modalidade (explorar legal esse assunto, o que é como são atribuídos ao canal)	
+	- Atributos de bloqueio
+	- Tarifação
+ 
+- Loyalty
+	- GDC 
+	- Gerador de Campanha 
+	- Premiação Direta
+	- explorar tarifas
+	- modalidade
+	- tipo de venda
+	- como o canal é criado
+	- 
+
+- Lojas B2B2C
+	- Como criar
+	- Como gerir
+	- Sustentação
+
+- Core Web API
+  	O que é? O que come? Sexta, no Globo Reporter!
+
+	- Como criar um pedido de cartão
+	- Como criar um pedido de recarga
+	- Tarifação
+	- Tipos de pagamento
+	- Como recuperar um pedido
+
+- Fluxo de pedidos: "O Bus"
+	- Pagamento
+	- Análise de Nudez
+	- Análise de Riscos
+	- Integração Processadora
+	- Integração com ERP
+	- DataPrep
+	- Logística
+	- Cancelamento
+
+- Backoffice
+	- Pedidos
+	- Cartões
+	- Contratos
+
+- Desafios
+	- Go Microserviços
+	- Performance	
+	- Novo backoffice, console e Auth API
+	- O que já fizemos?
+
+Sustentação
+	- Fechamentos mensais
+	- cvp
+	- performance reemissão	

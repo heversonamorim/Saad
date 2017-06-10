@@ -1,0 +1,404 @@
+﻿@using Saad.Lib.Data.Model
+@using Saad.Lib.Data.Helpers
+@model Saad.Models.AnalysisRequestDetailsViewModel
+@{
+    ViewBag.Title = "Detalhes Homologação";
+}
+
+<div class="row wrapper border-bottom white-bg page-heading">
+    <div class="col-sm-4">
+        <h2>@Model.Request.TypeName</h2>
+        <ol class="breadcrumb">
+            <li>
+                <a href="@Url.Action("Index", "Home")">Home</a>
+            </li>
+            <li>
+                <a href="@Url.Action("Index", "AnalysisRequest")">Documentação</a>
+            </li>
+            <li class="active">
+                <strong>Detalhes</strong>
+            </li>
+        </ol>
+    </div>
+</div>
+<div class="row">
+    <div class="col-lg-9">
+        <div class="wrapper wrapper-content animated fadeInUp">
+            <div class="ibox">
+                <div class="ibox-content">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="m-b-md">
+                                @if (Model.Request.Status.IsAWorkflowEnd) { 
+                                    if (Model.Request.Type != AnalysisRequest.Litigation) {
+                                    <a href="@Url.Action("FinalReport", "AnalysisRequest", new { id = Model.Request.Id })" target="_blank" class="btn btn-white btn-xs pull-right">
+                                        <i class="fa fa-file-o"></i> Final Report
+                                    </a>
+                                    }
+                                    
+                                    if (User.IsInRole(ApplicationUserRoles.Admin)) { 
+                                        <a href="#" id="reopen" type="submit" class="btn btn-white btn-xs pull-right">
+                                            <i class="fa fa-folder-open"></i> Reopen
+                                        </a>
+                                    }
+                                }
+                                <h2>@Model.Request.TypeName @Model.Request.Supplier.Name</h2>
+                            </div>
+                            <dl class="dl-horizontal">
+                                <dt>Status:</dt>
+                                <dd><span class="label @Html.ConvertAnalysisRequestStatusToLabelCss(Model.Request.Status.Value)">@Model.Request.Status.Name.ToUpper()</span></dd>
+
+                            </dl>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <dl class="dl-horizontal">
+
+                                <dt>CNPJ:</dt>
+                                <dd>@Model.Request.Supplier.CNPJ</dd>
+                                <dt>Razão Social:</dt>
+                                <dd>@Model.Request.Supplier.Name</dd>
+                                <dt>Nome Fantasia:</dt>
+                                <dd>@Model.Request.Supplier.FantasyName</dd>
+                                <dt class="m-t-sm">Nome Contato:</dt>
+                                <dd class="m-t-sm">@Model.Request.Supplier.MainContactName</dd>
+                                <dt>E-mail:</dt>
+                                <dd><a href="mailto:@Model.Request.Supplier.MainContactEmail">@Model.Request.Supplier.MainContactEmail</a></dd>
+                                <dt class="m-t-sm"></dt>
+                                <dd class="m-t-sm">
+                                    <address>
+                                        <strong>Endereço</strong><br>
+                                        @Model.Request.Supplier.Street, @Model.Request.Supplier.Number<br>
+                                        @Model.Request.Supplier.City, @Model.Request.Supplier.UF @Model.Request.Supplier.CEP<br>
+                                        <abbr title="Phone">P:</abbr> @Model.Request.Supplier.MainContactPhone<br />
+                                        <abbr title="Mobile">M:</abbr> @Model.Request.Supplier.MobilePhone
+                                    </address>
+                                </dd>
+                            </dl>
+
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <dl class="dl-horizontal">
+
+                                <dt>Requisitado por:</dt>
+                                <dd>@(Model.Request.RequestedByUser != null ? Model.Request.RequestedByUser.Name : "Desconhecido")</dd>
+                                <dt>Departamento:</dt>
+                                <dd>@(Model.Request.RequestedByDepartment != null ? Model.Request.RequestedByDepartment.Name : "Desconhecido")</dd>
+                                <dt>Cliente:</dt>
+                                <dd><a href="#" class="text-navy">@(Model.Request.Customer != null ? Model.Request.Customer.Name : "Desconhecido")</a> </dd>
+
+                            </dl>
+                        </div>
+                        <div class="col-lg-6" id="cluster_info">
+                            <dl class="dl-horizontal">
+
+                                <dt>Atualizado em:</dt>
+                                <dd>@Model.Request.CreateDate.ToString()</dd>
+                                <dt>Requisitado em:</dt>
+                                <dd>@Model.Request.CreateDate.ToString()</dd>
+                                
+                                @if (@Model.Request.ReferenceDate.HasValue) { 
+                                    <dt>Data de Referência:</dt>
+                                    <dd>@Model.Request.ReferenceDate.Value.ToString("MM/yyyy")</dd>
+                                }
+                                @*<dt>Envolvidos:</dt>
+                                    <dd class="project-people">
+                                        <a href=""><img alt="image" class="img-circle" src="~/Images/a3.jpg"></a>
+                                        <a href=""><img alt="image" class="img-circle" src="~/Images/a1.jpg"></a>
+                                        <a href=""><img alt="image" class="img-circle" src="~/Images/a2.jpg"></a>
+                                        <a href=""><img alt="image" class="img-circle" src="~/Images/a4.jpg"></a>
+                                        <a href=""><img alt="image" class="img-circle" src="~/Images/a5.jpg"></a>
+                                    </dd>*@
+                            </dl>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <dl class="dl-horizontal">
+                                <dt>Andamento:</dt>
+                                <dd>
+                                    <div class="progress progress-striped active m-b-sm">
+                                        <div style="width: @Model.Request.Progress.ToString("0%");" class="progress-bar"></div>
+                                    </div>
+                                    <small>@Model.Request.TypeName completa em <strong>@Model.Request.Progress.ToString("0%")</strong>.</small>
+                                </dd>
+                            </dl>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-lg-3">
+                            <div class="ibox float-e-margins">
+                                <div class="ibox-content">
+                                    <div class="file-manager">
+                                        <h5>Documentos</h5>
+                                        <small>Faça o upload dos documentos apresentados ao lado para iniciar sua análise</small>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-9 animated fadeInRight">
+                            @if (Model.Request.Documents.Count() > 0) {
+                                @Html.Partial("_DocumentsList")
+
+                            }
+
+                            @if (Model.DocumentsToSend.Count() > 0) {
+
+                                using (Html.BeginForm("Upload", "AnalysisRequest", FormMethod.Post, new { id = "upload-form", enctype = "multipart/form-data" })) {
+                                    @Html.AntiForgeryToken()
+                                    @Html.Hidden("Id", Model.Request.Id)
+
+                                    @Html.Partial("_SubmitDocuments")
+
+                                }
+
+                            }
+                            
+                            @if (Model.Request.Type == AnalysisRequest.Litigation) {
+                                if (Model.Request.Status.Equals(AnalysisRequestStatus.WaitingForAnalysis)) { 
+                                    @Html.Partial("_LitigationData", Model.Request.LitigationData ?? new AnalysisRequestLitigation() { Request = Model.Request })
+                                }
+                                if (Model.Request.Status.Equals(AnalysisRequestStatus.Approved)) {
+                                    @Html.Partial("_LitigationDataView", Model.Request.LitigationData)
+                                }
+                            }
+                            
+                            @if (User.IsInRole(ApplicationUserRoles.Admin) && Model.Request.Status.Equals(AnalysisRequestStatus.WaitingForFeedback)) {
+                                @Html.Partial("_SubmitFeedback")
+
+                            }
+                            
+                            @if (Model.Request.Status.IsAWorkflowEnd && Model.Request.Type != AnalysisRequest.Litigation) {
+                                @Html.Partial("_Feedbacks")
+                            }
+                               
+                        </div>
+
+
+                    </div>
+
+                    @Html.Partial("_Activities", Model.Request.Activities)
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3">
+        <div class="wrapper wrapper-content project-manager">
+            <h4>Descrição</h4>
+
+            <p class="small">
+                SERVIÇOS
+                <ul class="unstyled">
+                    @foreach (var description in Model.Request.WorkDescriptions) {
+                        <li><span class="small">@description.WorkDescription.Name</span></li>
+                    }
+                </ul>
+            </p>
+            <p class="small">
+                <span class="glyphicon glyphicon-map-marker"></span> @(Model.Request.ServiceLocal ?? @Model.Request.Work.Name)
+            </p>
+
+            @if (Model.Request.ContractStartDate.HasValue) { 
+                <p class="small">
+                    <span class="fa fa-calendar-o"></span> @Model.Request.ContractStartDate.Value.ToShortDateString()
+                </p>
+            }
+            
+            @if (Model.Request.ContractFinalDate.HasValue) {
+                <p class="small">
+                    <span class="fa fa-calendar-o"></span> @Model.Request.ContractFinalDate.Value.ToShortDateString()
+                </p>
+            }
+            
+            @if (Model.Request.ContractTotalAmount.HasValue) {
+                <p class="small">
+                    <span class="fa fa-money"></span> @Model.Request.ContractTotalAmount.Value.ToString("C")
+                </p>
+            }
+            
+            @if (Model.Request.ContractBalance.HasValue) {
+                <p class="small">
+                    <span class="fa fa-money"></span> @Model.Request.ContractBalance.Value.ToString("C") (Saldo)
+                </p>
+            }
+
+            @if (!string.IsNullOrWhiteSpace(Model.Request.ContractFileUrl)) {
+                <p class="small">
+                    <span class="fa fa-file"></span> <a href="@Model.Request.ContractFileUrl">@Model.Request.ContractFileName</a>
+                </p>
+            }
+
+            <div class="m-t hidden">
+                <h5>Arquivos</h5>
+                <ul class="list-unstyled project-files">
+                    <li><a href=""><i class="fa fa-file"></i> Project_document.docx</a></li>
+                    <li><a href=""><i class="fa fa-file-picture-o"></i> Logo_zender_company.jpg</a></li>
+                    <li><a href=""><i class="fa fa-stack-exchange"></i> Email_from_Alex.mln</a></li>
+                    <li><a href=""><i class="fa fa-file"></i> Contract_20_11_2014.docx</a></li>
+                </ul>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    @Scripts.Render("~/plugins/jasnyBootstrap")
+    @Scripts.Render("~/plugins/dataPicker")
+    @Scripts.Render("~/plugins/touchSpin")
+    @Scripts.Render("~/bundles/inspinia")
+    @Scripts.Render("~/plugins/sweetAlert")
+    @Scripts.Render("~/maskMoney")
+    @Scripts.Render("~/plugins/validate")
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('.reference-date').datepicker({
+                format: 'mm/yyyy',
+                minViewMode: 1,
+                keyboardNavigation: false,
+                forceParse: false,
+                autoclose: true,
+                todayHighlight: true
+            });
+
+            $("a[name='justify-link']").click(function () {
+                $(this).parent().hide();
+                $(this).parent().next().slideDown();
+
+                return false;
+            });
+
+            $(".close").click(function () {
+                $(this).parent().hide();
+                $(this).parent().prev().show();
+                $(this).parent().prev().prev().show();
+            });
+
+            $(".touchspin1").each(function () {
+                var max = $(this).data('maximum-points')
+
+                $(this).TouchSpin({
+                    buttondown_class: 'btn btn-white',
+                    buttonup_class: 'btn btn-white',
+                    min: 0,
+                    max: max
+                });
+
+            });
+
+            $('.delete-document').click(function (e) {
+                var elem = $(this);
+                e.preventDefault();
+
+                swal({
+                    title: "Remover?",
+                    text: "Você realmente deseja remover esse arquivo?",
+                    type: "warning",
+                    showCancelButton: true,
+                    cancelButtonText: "Cancelar",
+                    confirmButtonColor: "#DD6B55",
+                    confirmButtonText: "Sim, remova!",
+                    closeOnConfirm: false
+                }, function () {
+                    $.post($(elem).attr('href')).success(function () {
+                        swal("Removido!", "Documento removido", "success");
+                        location.reload();
+                    }).error(function () {
+                        swal("Error!", "Houve um erro ao remover o documento. Por favor, tente novamente mais tarde", "danger");
+                    })
+
+                });
+            });
+
+            $('#reopen').click(function () {
+                swal({
+                    title: "Reabrir?",
+                    text: "Você realmente deseja reabrir essa análise?",
+                    type: "warning",
+                    showCancelButton: true,
+                    cancelButtonText: "Cancelar",
+                    confirmButtonColor: "#DD6B55",
+                    confirmButtonText: "Sim, reabra!",
+                    closeOnConfirm: false
+                }, function () {
+                    $.post("/AnalysisRequest/Reopen/@Model.Request.Id").success(function () {
+                        swal("Reaberto!", "Requisição reaberta", "success");
+                        location.reload();
+                    }).error(function () {
+                        swal("Error!", "Houve um erro ao reabrir essa requisição. Por favor, tente novamente mais tarde", "danger");
+                    })
+                    
+                });
+            });
+
+            $('.mask-money').maskMoney({ symbol: 'R$ ', showSymbol: true, thousands: '.', decimal: ',', symbolStay: true, allowNegative: true, });
+            
+            $("#ContractSum, #InitialContractValue").change(function () {
+                $("#Result").maskMoney('mask', ($("#ContractSum").maskMoney('unmasked')[0] - $("#InitialContractValue").maskMoney('unmasked')[0]));
+            });
+
+            $("#ContractAdditionsValue, #InitialContractValue").change(function () {
+                $("#ContractTotal").maskMoney('mask', ($("#ContractAdditionsValue").maskMoney('unmasked')[0] + $("#InitialContractValue").maskMoney('unmasked')[0]));
+            });
+
+            $("#ContractSuppliedValue, #ContractAdditionsValue, #InitialContractValue").change(function () {
+                $("#ContractBlockedValue").maskMoney('mask', ($("#ContractTotal").maskMoney('unmasked')[0] + $("#ContractSuppliedValue").maskMoney('unmasked')[0]));
+            });
+
+            $("#ContractSuppliedValue, #ContractAdditionsValue, #InitialContractValue").change(function () {
+                $("#ContractBlockedValue").maskMoney('mask', ($("#ContractTotal").maskMoney('unmasked')[0] + $("#ContractSuppliedValue").maskMoney('unmasked')[0]));
+            });
+
+            $("#ContractEmployeesPayment, #TaxesPaymentValue, #SuppliersPaymentValue, #HiringValue").change(function () {
+                $("#ReplacementTotal").maskMoney('mask', ($("#ContractEmployeesPayment").maskMoney('unmasked')[0] + $("#TaxesPaymentValue").maskMoney('unmasked')[0]) + $("#SuppliersPaymentValue").maskMoney('unmasked')[0] + $("#HiringValue").maskMoney('unmasked')[0]);
+            });
+
+            $("#ContractBlockedValue, #BondValue, #ContractEmployeesPayment, #TaxesPaymentValue, #SuppliersPaymentValue, #HiringValue").change(function () {
+                $("#Balance").maskMoney('mask', ($("#ContractBlockedValue").maskMoney('unmasked')[0] + $("#BondValue").maskMoney('unmasked')[0]) - $("#ReplacementTotal").maskMoney('unmasked')[0]);
+            });
+
+            $(".date").datepicker({
+                format: 'dd/mm/yyyy',
+                keyboardNavigation: false,
+                forceParse: false,
+                autoclose: true,
+                todayHighlight: true
+            });
+
+
+        });
+    </script>
+}
+
+@section styles{
+    @Styles.Render("~/plugins/jasnyBootstrapStyles")
+    @Styles.Render("~/plugins/dataPickerStyles")
+    @Styles.Render("~/plugins/touchSpinStyles")
+    @Styles.Render("~/plugins/sweetAlertStyles")
+
+    <style type="text/css">
+        .file-box {
+            width: auto !important;
+            float: none !important;
+        }
+
+        .fileinput {
+            display: block !important;
+        }
+
+        .file {
+            width: 150px !important;
+            float: left;
+        }
+    </style>
+}

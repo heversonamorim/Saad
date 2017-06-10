@@ -1,0 +1,283 @@
+﻿@using Saad.Lib.Data.Model
+@model Saad.Models.RequestAnalysisViewModel
+@{
+    ViewBag.Title = "Requisitar Análise";
+}
+
+<div class="row wrapper border-bottom white-bg page-heading">
+    <div class="col-lg-10">
+        <h2>Requisitar Análise</h2>
+        <ol class="breadcrumb">
+            <li>
+                <a href="@Url.Action("Index", "Home")">Home</a>
+            </li>
+            <li>
+                <a href="@Url.Action("Index", "AnalysisRequest")">Análises</a>
+            </li>
+            <li class="active">
+                <strong>Requisitar Análise</strong>
+            </li>
+        </ol>
+    </div>
+    <div class="col-lg-2">
+
+    </div>
+</div>
+<div class="wrapper wrapper-content animated fadeInRight">
+    
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>Dados Básicos <small>do fornecedor</small></h5>
+                </div>
+               @Html.ValidationSummary(true, "Verifique e corrija os seguintes erros", new { @class = "alert alert-danger" })
+                <div class="ibox-content">
+                    @using (Html.BeginForm("Create", "AnalysisRequest", FormMethod.Post, new { @class = "form-horizontal", encType = "multipart/form-data" })) {
+                        @Html.AntiForgeryToken();
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">Tipo Kit:</label>
+                            <div class="col-sm-5">
+                                @Html.DropDownListFor(m => m.Request.Type, @Html.RequestTypes(), new { @class = "form-control" })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">CNPJ</label>
+                            <div class="col-sm-5">@Html.TextBoxFor(m => m.Request.Supplier.CNPJ, new { @class = "form-control cnpj", data_mask = "99.999.999/9999-99" })
+                            </div>
+                        </div>
+                        
+                        <div id="last-request" class="col-sm-offset-2 col-sm-10 hidden">
+                            <p><strong>Última Análise</strong></p>
+                            <p><strong>Data:</strong> <span id="last-request-date"></span>&nbsp;<span id="last-request-age" class="label"></span></p>
+                            <p><strong>Tipo:</strong> <span id="last-request-type"></span></p>
+                            <p><strong>Status:</strong> <span id="last-request-status"></span></p>
+                            <p><a id="last-request-link" href="#" target="_blank">Visualizar</a></p>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">Razão Social</label>
+
+                            <div class="col-sm-10">@Html.TextBoxFor(m => m.Request.Supplier.Name, new { @class="form-control" })</div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">Nome Fantasia</label>
+
+                            <div class="col-sm-10">@Html.TextBoxFor(m => m.Request.Supplier.FantasyName, new { @class = "form-control" })</div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">CEP</label>
+
+                            <div class="col-sm-2">@Html.TextBoxFor(m => m.Request.Supplier.CEP, new { @class = "form-control", data_mask = "99999-999" })</div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">Endereço</label>
+
+                            <div class="col-sm-9">@Html.TextBoxFor(m => m.Request.Supplier.Street, new { @class = "form-control" })</div>
+                            <div class="col-sm-1">@Html.TextBoxFor(m => m.Request.Supplier.Number, new { @class = "form-control" })</div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">Bairro</label>
+                            <div class="col-sm-10">@Html.TextBoxFor(m => m.Request.Supplier.District, new { @class = "form-control" })</div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">Cidade</label>
+                            <div class="col-sm-10">@Html.TextBoxFor(m => m.Request.Supplier.City, new { @class = "form-control" })</div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">UF</label>
+
+                            <div class="col-sm-4">@Html.DropDownListFor(m => m.Request.Supplier.UF, @Html.GetUFList(), "Selecione", new { @class = "form-control m-b" })</div>
+                        </div>
+
+                        <div class="hr-line-dashed"></div>
+                        <h4>Contrato</h4>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">Data Inicial do Contrato:</label>
+
+                            <div class="col-sm-2">@Html.TextBoxFor(m => m.Request.ContractStartDate, new { @class = "form-control date" })</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">Data Final do Contrato:</label>
+
+                            <div class="col-sm-2">@Html.TextBoxFor(m => m.Request.ContractFinalDate, new { @class = "form-control date" })</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">Valor Total do Contrato:</label>
+
+                            <div class="col-sm-3">@Html.TextBoxFor(m => m.Request.ContractTotalAmount, new { @class = "form-control currency" })</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">Saldo do Contrato:</label>
+
+                            <div class="col-sm-3">@Html.TextBoxFor(m => m.Request.ContractBalance, new { @class = "form-control currency" })</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">Obra:</label>
+                            <div class="col-sm-5">
+                                @Html.DropDownListFor(m => m.Request.Work.Id, @Html.GetWorks(), "Selecione", new { @class = "form-control" })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">Descrição do Serviço</label>
+
+                            <div class="col-sm-10">
+                                @Html.DropDownListFor(m => m.WorkDescriptions, @Html.GetWorkDescriptions(), new { @class = "form-control", multiple = "multiple" })
+                                <span id="helpBlock" class="help-block">Segure o CTRL para selecionar mais de uma opção</span>
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+                        <h4>Dados do contato principal <small>da empresa a ser analisada</small></h4>
+                        <div class="form-group m-t">
+                            <label class="col-sm-2 control-label">Nome Contato</label>
+
+                            <div class="col-sm-10">@Html.TextBoxFor(m => m.Request.Supplier.MainContactName, new { @class = "form-control" })</div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">E-mail</label>
+
+                            <div class="col-sm-10">@Html.TextBoxFor(m => m.Request.Supplier.MainContactEmail, new { @class = "form-control" })</div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">Telefone</label>
+
+                            <div class="col-sm-10">@Html.TextBoxFor(m => m.Request.Supplier.MainContactPhone, new { @class = "form-control" })</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">Celular</label>
+
+                            <div class="col-sm-10">@Html.TextBoxFor(m => m.Request.Supplier.MobilePhone, new { @class = "form-control" })</div>
+                        </div>
+
+                        if (User.IsInRole(Saad.Lib.Data.Helpers.ApplicationUserRoles.Admin)) {
+                            <div class="hr-line-dashed"></div>
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">Solicitado por</label>
+
+                                <div class="col-sm-10">
+                                    @Html.DropDownListFor(m => m.Request.RequestedByUser.Id, @Html.GetCustomerUsers(), new { @class= "select2 form-control" })
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">Departamento</label>
+
+                                <div class="col-sm-10">
+                                    @Html.DropDownListFor(m => m.Request.RequestedByDepartment.Id, @Html.GetDepartments(), "Selecione", new { @class = "form-control" })
+                                </div>
+                            </div>
+
+                        }
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">Contrato</label>
+
+                            <div class="col-sm-10">
+                                @Html.TextBoxFor(m => m.Contract, new { type = "file", name = "Contract" })
+                            </div>
+                        </div>
+
+                        <div class="hr-line-dashed"></div>
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                <a href="Index" class="btn btn-white pull-left" type="button">Cancelar</a>
+
+                                <button class="btn btn-primary pull-right m-l" type="submit">Salvar</button>
+                                <label class="pull-right m-t-xs"> <div class="icheckbox_square-green" style="position: relative;">@Html.CheckBoxFor(m => m.CreateAnother, new { @class="i-checks", style="position: absolute; opacity: 0;"})<ins class="iCheck-helper" style="position: absolute; top: 0%; left: 0%; display: block; width: 100%; height: 100%; margin: 0px; padding: 0px; background: rgb(255, 255, 255); border: 0px; opacity: 0;"></ins></div> Cadastrar outro? </label>
+
+                                
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    @Styles.Render("~/Content/plugins/iCheck/iCheckStyles")
+    @Styles.Render("~/Content/plugins/chosen/chosenStyles")
+    @Styles.Render("~/plugins/jasnyBootstrapStyles")
+    @Styles.Render("~/plugins/dataPickerStyles")
+    @Styles.Render("~/plugins/sweetAlertStyles")
+}
+
+@section Scripts {
+    @Scripts.Render("~/plugins/iCheck")
+    @Scripts.Render("~/plugins/chosen")
+    @Scripts.Render("~/plugins/validate")
+    @Scripts.Render("~/plugins/jasnyBootstrap")
+    @Scripts.Render("~/plugins/dataPicker")
+    @Scripts.Render("~/plugins/autoNumeric")
+    @Scripts.Render("~/plugins/sweetAlert")
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            $('.i-checks').iCheck({
+                checkboxClass: 'icheckbox_square-green',
+                radioClass: 'iradio_square-green',
+            });
+
+            $('.date').datepicker({
+                format: 'dd/mm/yyyy',
+                todayHighlight: true
+            });
+
+            $('.currency').autoNumeric('init', { aSep: '', aDec: ',' }); 
+            
+            $('select.select2').chosen();
+
+            $("#Request_Supplier_CEP").blur(function () {
+                $.get('/Home/GetZipcodeData/?zipcode=' + $(this).val()).done(function (data) {
+                    $("#Request_Supplier_Street").val(data.end);
+                    $("#Request_Supplier_District").val(data.bairro);
+                    $("#Request_Supplier_City").val(data.cidade);
+                    $("#Request_Supplier_UF").val(data.uf);
+                });
+            });
+
+            $('.cnpj').blur(function() {
+                $("#last-request").addClass('hidden');
+                $.get('/AnalysisRequest/GetLastRequest/?cnpj=' + $(this).val()).done(function (data) {
+                    $("#Request_Supplier_Name").val(data.Supplier.Name);
+                    $("#Request_Supplier_FantasyName").val(data.Supplier.FantasyName);
+
+                    $("#Request_Supplier_CEP").val(data.Supplier.Address.Zipcode);
+                    $("#Request_Supplier_Street").val(data.Supplier.Address.Street);
+                    $("#Request_Supplier_Number").val(data.Supplier.Address.Number);
+                    $("#Request_Supplier_District").val(data.Supplier.Address.District);
+                    $("#Request_Supplier_City").val(data.Supplier.Address.City);
+                    $("#Request_Supplier_UF").val(data.Supplier.Address.UF);
+                    
+                    $("#last-request-date").html(data.Date);
+                    $("#last-request-type").html(data.Type);
+                    $("#last-request-status").html(data.Status);
+                    $("#last-request-link").attr('href', "/AnalysisRequest/Details/" + data.Id);
+                    $("#last-request-age").html(data.MonthToDate.toString() + " mês(es) atrás");
+                    
+                    var label = "label-success";
+                    if (data.MonthToDate > 6) {
+                        label = "label-danger";
+                    } else if (data.MonthToDate > 3) {
+                        label = "label-warning";
+                    }
+
+                    $("#last-request-age").addClass(label);
+
+                    $("#last-request").removeClass('hidden');
+
+                });
+            });
+        });
+    </script>
+}
+
+

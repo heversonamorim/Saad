@@ -1,0 +1,9 @@
+2017-02-28 14:28:31,124 [10] INFO  Saad.Workers.Program [(null)] - Start
+2017-04-15 15:45:38,767 [10] ERROR Saad.Workers.Program [(null)] - Send expiring time to send documents error
+System.Net.Mail.SmtpException: O servidor SMTP requer uma conexão segura ou o cliente não foi autenticado. A resposta do servidor foi: Authentication required
+   em System.Net.Mail.MailCommand.CheckResponse(SmtpStatusCode statusCode, String response)
+   em System.Net.Mail.MailCommand.Send(SmtpConnection conn, Byte[] command, MailAddress from, Boolean allowUnicode)
+   em System.Net.Mail.SmtpTransport.SendMail(MailAddress sender, MailAddressCollection recipients, String deliveryNotify, Boolean allowUnicode, SmtpFailedRecipientException& exception)
+   em System.Net.Mail.SmtpClient.Send(MailMessage message)
+   em Saad.Lib.Service.AnalysisRequestService.SendExpiringPeriodToSendDocumentsNotification(AnalysisRequest expiringRequest) na c:\projetos\saad\code\Saad\Saad.Lib\Service\AnalysisRequestService.cs:linha 339
+   em Saad.Lib.Service.AnalysisRequestService.SendExpiringPeriodToSendDocumentsNotification(ILog log) na c:\projetos\saad\code\Saad\Saad.Lib\Service\AnalysisRequestService.cs:linha 291

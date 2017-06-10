@@ -1,0 +1,44 @@
+﻿@model Saad.Models.AnalysisRequestDetailsViewModel
+
+<div class="m-t-md">
+    <h1>Parecer</h1>
+    <p class="text-muted">Insira seu parecer para cada um dos tipos de documentos analisados</p>
+    @using (Html.BeginForm("Feedback", "AnalysisRequest", new { id = Model.Request.Id }, FormMethod.Post, new { @class = "form-horizontal" })) {
+        @Html.AntiForgeryToken()
+
+        var documentTypes = from document in Model.Request.Documents
+                            group document by document.Type into g
+                            select new {
+                                Type = g.Key,
+                                Count = g.Count()
+                            };
+
+        foreach (var type in documentTypes) {
+
+            <div class="form-group">
+                <label for="inputEmail3" class="col-sm-2 control-label">@type.Type</label>
+                <div class="col-sm-10">
+                    @{
+                        var feedback = @Model.Request.Feedbacks.SingleOrDefault(f => f.Type == type.Type);
+                        var text = "";
+                        if (feedback != null)
+                            text = feedback.Feedback.Trim();
+
+                    }
+                    
+                    <textarea class="form-control" required id="type|@type.Type" name="type|@type.Type" placeholder="Insira seu parecer sobre @type.Type">@text</textarea>
+                </div>
+            </div>
+
+        }
+
+        <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-10">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fa fa-check"></i> Salvar Parecer
+                </button>
+            </div>
+        </div>
+
+    }
+</div>

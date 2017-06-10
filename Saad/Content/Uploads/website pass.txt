@@ -1,0 +1,8 @@
+user: Administrator
+pass: J-zx;wD*)9.S(Q4JC*.*IeynBTlGCDex
+
+db: saad
+user: saad
+pass: MasterSaadUser
+
+82455256000158 

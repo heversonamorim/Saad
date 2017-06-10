@@ -1,0 +1,202 @@
+﻿@using PagedList.Mvc;
+@using Saad.Lib.Data.Helpers;
+@using Saad.Lib.Data.Model;
+@model PagedList.IPagedList<Saad.Lib.Data.Model.AnalysisRequest >
+
+@{
+    ViewBag.Title = "Documentação";
+}
+
+<div class="row wrapper border-bottom white-bg page-heading">
+    <div class="col-sm-4">
+        <h2>Documentação</h2>
+        <ol class="breadcrumb">
+            <li>
+                <a href="@Url.Action("Index", "Home")">Home</a>
+            </li>
+            <li class="Em Progresso">
+                <strong>Documentação</strong>
+            </li>
+        </ol>
+    </div>
+</div>
+
+<a id="new" href="@Url.Action("Create", "AnalysisRequest")" class="btn btn-primary btn-circle btn-lg dim" type="button" data-spy="affix" data-offset-bottom="1" style="right:30px;z-index:2;bottom:30px">
+    <i class="fa fa-plus"></i>
+</a>
+
+<div class="row">
+    <div class="col-lg-12">
+        <div class="wrapper wrapper-content animated fadeInUp">
+            
+            <div class="ibox">
+                <div class="ibox-title">
+                    <h5></h5>
+                    <div class="ibox-tools">
+                        @if (!User.IsInRole(ApplicationUserRoles.Supplier)) { 
+                            <a href="@Url.Action("Create", "AnalysisRequest")" class="btn btn-primary btn-xs">Requisitar Análise</a>
+                        }
+                    </div>
+                </div>
+                <div class="ibox-content">
+                    <div class="row m-b-sm m-t-sm">
+                        <div class="col-md-12">
+                            <form method="get" class="form-horizontal">
+                                <div class="form-group">
+                                    <label class="control-label col-md-2">Nome/CNPJ</label>
+                                    <div class="col-sm-10 input-group">
+                                        <input type="text" id="q" name="q" placeholder="Pesquisar" class="form-control" value="@ViewBag.CurrentSearch">
+                                        <span class="input-group-btn">
+                                            <button type="submit" class="btn btn-primary"><i class="fa fa-search"></i> Pesquisar</button>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-md-2">Serviço</label>
+                                    <div class="col-md-5 input-group">
+                                        <input type="text" id="service" name="service" placeholder="Serviço" class="form-control" value="@ViewBag.CurrentSearchService">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-md-2">Tipo</label>
+                                    <div class="col-md-5 input-group">
+                                        <select id="type" name="type" class="form-control">
+                                            <option value=""></option>
+                                            <option value="@AnalysisRequest.MonthlyAnalysis" selected="@(AnalysisRequest.MonthlyAnalysis == ViewBag.CurrentSearchType)">Análise Mensal</option>
+                                            <option value="@AnalysisRequest.Compliance" selected="@(AnalysisRequest.Compliance == ViewBag.CurrentSearchType)">Compliance</option>
+                                            <option value="@AnalysisRequest.Litigation" selected="@(AnalysisRequest.Litigation == ViewBag.CurrentSearchType)">Contencioso</option>
+                                            <option value="@AnalysisRequest.Homologation" selected="@(AnalysisRequest.Homologation == ViewBag.CurrentSearchType)">Homologação</option>
+
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-md-2">Status</label>
+                                    <div class="col-md-5 input-group">
+                                        <select id="status" name="status" class="form-control">
+                                            <option value=""></option>
+                                            <option value="@AnalysisRequestStatus.WaitingForDocuments.Value" selected="@(AnalysisRequestStatus.WaitingForDocuments.Value == ViewBag.CurrentSearchStatus)">@AnalysisRequestStatus.WaitingForDocuments.Name</option>
+                                            <option value="@AnalysisRequestStatus.WaitingForAnalysis.Value" selected="@(AnalysisRequestStatus.WaitingForAnalysis.Value == ViewBag.CurrentSearchStatus)">@AnalysisRequestStatus.WaitingForAnalysis.Name</option>
+                                            <option value="@AnalysisRequestStatus.WaitingForFeedback.Value" selected="@(AnalysisRequestStatus.WaitingForFeedback.Value == ViewBag.CurrentSearchStatus)">@AnalysisRequestStatus.WaitingForFeedback.Name</option>
+                                            <option value="@AnalysisRequestStatus.Approved.Value" selected="@(AnalysisRequestStatus.Approved.Value == ViewBag.CurrentSearchStatus)">@AnalysisRequestStatus.Approved.Name</option>
+                                            <option value="@AnalysisRequestStatus.ApprovedWithReservationsLevel1.Value" selected="@(AnalysisRequestStatus.ApprovedWithReservationsLevel1.Value == ViewBag.CurrentSearchStatus)">@AnalysisRequestStatus.ApprovedWithReservationsLevel1.Name</option>
+                                            <option value="@AnalysisRequestStatus.ApprovedWithReservationsLevel2.Value" selected="@(AnalysisRequestStatus.ApprovedWithReservationsLevel2.Value == ViewBag.CurrentSearchStatus)">@AnalysisRequestStatus.ApprovedWithReservationsLevel2.Name</option>
+                                            <option value="@AnalysisRequestStatus.Disapproved.Value" selected="@(AnalysisRequestStatus.Disapproved.Value == ViewBag.CurrentSearchStatus)">@AnalysisRequestStatus.Disapproved.Name</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-2 control-label">Descrição do Serviço</label>
+
+                                    <div class="col-sm-5 input-group">
+                                        @Html.DropDownList("WorkDescription", @Html.GetWorkDescriptions(), "Selecione", new { @class = "form-control" })
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-md-2">Dt. Referência</label>
+                                    <div class="col-md-5 input-group">
+                                        <input type="text" id="referencedate" name="referencedate" class="reference-date form-control" style="width:120px" value="@ViewBag.CurrentSearchReferenceDate" />
+                                        <span style="float: left;display: table-cell;position: relative;margin: 8px;"> até </span>
+                                        <input type="text" id="endreferencedate" name="endreferencedate" class="reference-date form-control" style="width:120px" value="@ViewBag.CurrentSearchEndReferenceDate" />
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="project-list">
+                        @if (Model != null && Model.Count() > 0) {
+                            <table class="table table-hover">
+                                <tbody>
+
+                                    @foreach (var request in Model) {
+                                        <tr>
+                                            <td width="220px" @*class="project-status"*@>
+                                                <span class="label @Html.ConvertAnalysisRequestStatusToLabelCss(request.Status.Value)">@request.Status.Name.ToUpper()</span>
+                                            </td>
+                                            <td class="project-title">
+                                                <a href="@Url.Action("Details", "AnalysisRequest", new { id = request.Id })">@request.TypeName @request.Supplier.Name</a>
+                                                <br />
+                                                CNPJ: @request.Supplier.CNPJ
+                                                <br />
+                                                @if (request.Work != null) { 
+                                                    <small>Obra: @string.Format("{0} - {1}", request.Work.Code, request.Work.Name)</small> 
+                                                }
+                                            </td>
+                                            <td>
+                                                @request.ReferenceDate.GetValueOrDefault(request.CreateDate).ToString("MM/yyyy")
+                                            </td>
+                                            <td class="project-completion">
+                                                <small>Andamento: @request.Progress.ToString("0%")</small>
+                                                <div class="progress progress-mini">
+                                                    <div style="width: @request.Progress.ToString("0%");" class="progress-bar"></div>
+                                                </div>
+                                            </td>
+                                            <td width="96px">
+                                                <a href="@Url.Action("Details", "AnalysisRequest", new { id = request.Id })" class="btn btn-primary btn-sm pull-left" title="Detalhes">
+                                                    <i class="fa fa-search"></i>
+                                                </a>
+                                                @if (request.Status.IsAWorkflowEnd && request.Type != AnalysisRequest.Litigation) {
+                                                    <a href="@Url.Action("FinalReport", "AnalysisRequest", new { id = request.Id })" class="btn btn-primary btn-sm pull-left m-l-sm" target="_blank" title="Final Report">
+                                                        <i class="fa fa-file-o"></i>
+                                                    </a>
+                                                }
+                                                @*<a href="#" class="btn btn-white btn-sm"><i class="fa fa-pencil"></i> Editar </a>*@
+                                            </td>
+                                        </tr>
+                                    }
+                                    
+
+                                </tbody>
+                            </table>
+                            
+                            @Html.PagedListPager(Model, page => Url.Action("Index",
+                                new { page, q = ViewBag.CurrentSearch, status = ViewBag.CurrentSearchStatus, 
+                                      type = ViewBag.CurrentSearchType,
+                                      service = ViewBag.CurrentSearchService,
+                                      referenceDate = ViewBag.CurrentSearchReferenceDate,
+                                      endReferenceDate = ViewBag.CurrentSearchEndReferenceDate,
+                                      work = ViewBag.CurrentSearchWork,
+                                      workDescription = ViewBag.CurrentSearchWorkDescription
+                                }))
+
+                        } else {
+                            <div class="alert alert-info text-center">
+                                <p>Nenhuma documentação encontrada!</p>
+                                @if (!User.IsInRole(ApplicationUserRoles.Supplier)) {
+                                    <a href="@Url.Action("Create", "AnalysisRequest")" class="btn btn-primary m-t-md">Requisitar Homologação</a>
+                                }
+                            </div>
+                        }
+
+                        
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+@section styles{
+    <link rel="stylesheet" type="text/css" href="~/Content/PagedList.css">
+    @Styles.Render("~/plugins/dataPickerStyles")
+}
+
+@section Scripts {
+    @Scripts.Render("~/plugins/dataPicker")
+    
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('.reference-date').datepicker({
+                format: 'dd/mm/yyyy',
+                keyboardNavigation: false,
+                forceParse: false,
+                autoclose: true,
+                todayHighlight: true
+            });
+        });
+    </script>
+}

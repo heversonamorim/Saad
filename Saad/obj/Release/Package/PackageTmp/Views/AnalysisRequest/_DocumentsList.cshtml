@@ -1,0 +1,119 @@
+﻿@model Saad.Models.AnalysisRequestDetailsViewModel
+@using Saad.Lib.Data.Helpers
+@using Saad.Lib.Data.Model
+
+@using (Html.BeginForm("Analysis", "AnalysisRequest", FormMethod.Post)) {
+    @Html.Hidden("Id", Model.Request.Id);
+    
+    foreach (var doc in Model.Request.Documents) {
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="file-box">
+                    <div class="clearfix">
+                        @if (Model.Request.Status.Equals(AnalysisRequestStatus.WaitingForDocuments) || Model.Request.Status.Equals(AnalysisRequestStatus.WaitingForAnalysis)) {
+                            <a href="@Url.Action("DeleteDocument", "AnalysisRequest", new { requestId = Model.Request.Id, documentId = doc.Id})" class="btn btn-danger delete-document" style="position: absolute;z-index:2;">
+                                <i class="fa fa-trash"></i>
+                            </a>
+
+                        }
+
+                        <div class="file">
+                            <a href="@doc.Url" target="_blank">
+                                <span class="corner"></span>
+
+                                <div class="icon">
+                                    <i class="fa @DisplayFAIcon(doc.FileName)"></i>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="pull-left tooltip-demo">
+
+                            @Html.EllipsisElementWithTooltip("p", "Documento: " + doc.Name, 58)
+
+                            <p>Tipo: @doc.Type</p>
+                            <p>Relevância: @doc.Relevance</p>
+                            <p>Data Referência: @doc.ReferenceDate</p>
+
+                            @if (doc.EvaluationPoints.HasValue) {
+                                if (User.IsInRole(ApplicationUserRoles.Admin)) { //a nota só é visualizada pelo time do SAAD. Cliente nem fornecedor a visualizam
+                                    <p class="@((doc.EvaluationPoints < doc.MaximumEvaluationPoints) ? "bg-danger p-xxs" : "")">Nota: @doc.EvaluationPoints/@doc.MaximumEvaluationPoints</p>
+
+                                }
+
+                                if (!string.IsNullOrWhiteSpace(doc.EvaluationRemarks)) {
+                                    <p>Justificativa: @doc.EvaluationRemarks</p>
+                                }
+
+                            }
+
+                        </div>
+
+                    </div>
+                    <div class="file-name">
+                        @if (doc.IsPresent) {
+                            <a href="@doc.Url" target="_blank">@doc.FileName</a>
+                        } else {
+                            <span class="label label-info">DOCUMENTO NÃO ENVIADO</span>
+                            <span><strong>Justificativa: </strong>@doc.ReasonNotPresent</span>
+                        }
+                    </div>
+                    <hr />
+
+                    @if (Model.CanSubmitEvaluation(User, doc)) { 
+
+                        <div class="form-horizontal">
+                            <div class="form-group" id="@string.Concat("evaluation-box-",doc.Id)">
+                                <label for="inputEmail3" class="col-sm-2 control-label">Nota</label>
+                                <div class="col-md-3">
+                                    <input type="text" class="form-control touchspin1" data-mask="9?9" data-maximum-points="@doc.MaximumEvaluationPoints.GetValueOrDefault(10)" name="@string.Concat("evaluation-",doc.Id)" value="@(doc.EvaluationPoints.HasValue ? doc.EvaluationPoints.Value.ToString() : "")">
+                                </div>
+                            </div>
+
+                            <div class="form-group" id="@string.Concat("reason-box-",doc.Id)">
+                                <label for="inputEmail3" class="col-sm-2 control-label">Justificativa Complementar</label>
+                                <div class="col-sm-5">
+                                    <textarea class="form-control" name="@string.Concat("reason-",doc.Id)">@doc.EvaluationRemarks</textarea>
+                                </div>
+                            </div>
+
+                        </div>
+                        
+                    }
+
+                </div>
+            </div>
+        </div>
+        <hr />
+
+    }
+
+    if (!Model.Request.Status.IsAWorkflowEnd && !Model.Request.Status.Equals(AnalysisRequestStatus.WaitingForFeedback) && Model.Request.Type != AnalysisRequest.Litigation
+            && (User.IsInRole(ApplicationUserRoles.Admin) || User.IsInRole(ApplicationUserRoles.Customer))) {     //há pelo menos um documento não avaliado
+        <button type="submit" class="btn btn-success"><i class="fa fa-send"></i> Enviar Aprovações</button>
+            
+    }
+}
+
+
+@helper DisplayFAIcon(string fileName) {
+    
+    string extension = Path.GetExtension(fileName);
+    switch (extension){
+        case ".pdf": @Html.Raw("fa-file-pdf-o");break;
+        case ".xls":
+        case ".xlsx":
+            @Html.Raw("fa-file-excel-o"); break;
+        case ".doc":
+        case ".docx":
+            @Html.Raw("fa-file-word-o"); break;
+        case ".png":
+        case ".jpg":
+        case ".bmp":
+        case ".jpeg":
+            @Html.Raw("fa-file-image-o"); break;
+        default: @Html.Raw("fa-file");break;
+    }
+        
+        
+    
+}
