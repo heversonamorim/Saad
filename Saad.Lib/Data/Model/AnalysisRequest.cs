@@ -117,5 +117,7 @@ namespace Saad.Lib.Data.Model {
 
         public virtual AnalysisRequestLitigation LitigationData { get; set; }
 
+        public int? EmployeeQuantity { get; set; }
+
     }
 }

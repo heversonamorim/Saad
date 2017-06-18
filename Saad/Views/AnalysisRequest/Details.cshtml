@@ -42,6 +42,11 @@
                                         </a>
                                     }
                                 }
+                                @if (User.IsInRole(ApplicationUserRoles.Admin) && !Model.Request.Status.Equals(AnalysisRequestStatus.Cancelled)) {
+                                    <a href="#" id="delete" type="submit" class="btn btn-white btn-xs pull-right">
+                                        <i class="fa fa-trash"></i> Cancelar
+                                    </a>
+                                }
                                 <h2>@Model.Request.TypeName @Model.Request.Supplier.Name</h2>
                             </div>
                             <dl class="dl-horizontal">
@@ -75,6 +80,9 @@
                                         <abbr title="Mobile">M:</abbr> @Model.Request.Supplier.MobilePhone
                                     </address>
                                 </dd>
+                                <dt>Funcionários:</dt>
+                                <dd>@Model.Request.EmployeeQuantity.GetValueOrDefault()</dd>
+
                             </dl>
 
                         </div>
@@ -338,6 +346,27 @@
                         swal("Error!", "Houve um erro ao reabrir essa requisição. Por favor, tente novamente mais tarde", "danger");
                     })
                     
+                });
+            });
+
+            $('#delete').click(function () {
+                swal({
+                    title: "Cancelar?",
+                    text: "Você realmente deseja cancelar essa análise?",
+                    type: "warning",
+                    showCancelButton: true,
+                    cancelButtonText: "Cancelar",
+                    confirmButtonColor: "#DD6B55",
+                    confirmButtonText: "Sim, cancele!",
+                    closeOnConfirm: false
+                }, function () {
+                    $.post("/AnalysisRequest/Cancel/@Model.Request.Id").success(function () {
+                        swal("Reaberto!", "Requisição cancelada", "success");
+                        location.reload();
+                    }).error(function () {
+                        swal("Error!", "Houve um erro ao reabrir essa requisição. Por favor, tente novamente mais tarde", "danger");
+                    })
+
                 });
             });
 

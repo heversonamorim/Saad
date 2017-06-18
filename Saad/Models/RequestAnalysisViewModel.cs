@@ -18,7 +18,7 @@ namespace Saad.Models {
 
         public bool CreateAnother { get; set; }
 
-
-        
+        [Required]
+        public string ReferenceDate { get; set; }
     }
 }

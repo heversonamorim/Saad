@@ -36,7 +36,7 @@
 
                             @if (doc.EvaluationPoints.HasValue) {
                                 if (User.IsInRole(ApplicationUserRoles.Admin)) { //a nota só é visualizada pelo time do SAAD. Cliente nem fornecedor a visualizam
-                                    <p class="@((doc.EvaluationPoints < doc.MaximumEvaluationPoints) ? "bg-danger p-xxs" : "")">Nota: @doc.EvaluationPoints/@doc.MaximumEvaluationPoints</p>
+                                    <p><span class="label @((doc.EvaluationPoints < doc.MaximumEvaluationPoints) ? "label-danger p-xxs" : "label-default")">Nota: @doc.EvaluationPoints/@doc.MaximumEvaluationPoints</span></p>
 
                                 }
 

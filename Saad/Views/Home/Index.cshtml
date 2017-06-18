@@ -289,7 +289,7 @@
                 var startDate = $("#StartDate").val();
                 var finishDate = $("#FinishDate").val();
 
-                window.location = '/AnalysisRequest?q=&service=&type=Homologation&status=' + status.code + '&referencedate=' + startDate + '&endreferencedate=' + finishDate;
+                window.location = '/AnalysisRequest?q=' + $("#Supplier").val() + '&service=&type=Homologation&status=' + status.code + '&referencedate=' + startDate + '&endreferencedate=' + finishDate;
 
             }
         };
@@ -318,7 +318,7 @@
                 var startDate = $("#StartDate").val();
                 var finishDate = $("#FinishDate").val();
 
-                window.location = '/AnalysisRequest?q=&service=&type=MonthlyAnalysis&status=' + status.code + '&referencedate=' + startDate + '&endreferencedate=' + finishDate;
+                window.location = '/AnalysisRequest?q=' + $("#Supplier").val() + '&service=&type=MonthlyAnalysis&status=' + status.code + '&referencedate=' + startDate + '&endreferencedate=' + finishDate;
 
             }
         };
@@ -348,7 +348,7 @@
                 var startDate = $("#StartDate").val();
                 var finishDate = $("#FinishDate").val();
 
-                window.location = '/AnalysisRequest?q=&service=&type=Litigation&status=' + status.code + '&referencedate=' + startDate + '&endreferencedate=' + finishDate;
+                window.location = '/AnalysisRequest?q=' + $("#Supplier").val() + '&service=&type=Litigation&status=&referencedate=' + startDate + '&endreferencedate=' + finishDate;
 
             }
         };

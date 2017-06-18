@@ -41,7 +41,7 @@
                 <div class="ibox-content">
                     <div class="row m-b-sm m-t-sm">
                         <div class="col-md-12">
-                            <form method="get" class="form-horizontal">
+                            <form id="form-get" method="get" class="form-horizontal">
                                 <div class="form-group">
                                     <label class="control-label col-md-2">Nome/CNPJ</label>
                                     <div class="col-sm-10 input-group">
@@ -51,9 +51,7 @@
                                         </span>
                                     </div>
                                 </div>
-                                <div class="form-group">
-
-                                </div>
+                                <input type="hidden" id="excel" name="excel" value="" />
                                 <div class="form-group">
                                     <label class="control-label col-md-2">Tipo</label>
                                     <div class="col-md-5 input-group">
@@ -63,7 +61,6 @@
                                             <option value="@AnalysisRequest.Compliance" selected="@(AnalysisRequest.Compliance == ViewBag.CurrentSearchType)">Compliance</option>
                                             <option value="@AnalysisRequest.Litigation" selected="@(AnalysisRequest.Litigation == ViewBag.CurrentSearchType)">Contencioso</option>
                                             <option value="@AnalysisRequest.Homologation" selected="@(AnalysisRequest.Homologation == ViewBag.CurrentSearchType)">Homologação</option>
-
                                         </select>
                                     </div>
                                 </div>
@@ -163,6 +160,11 @@
                                       workDescription = ViewBag.CurrentSearchWorkDescription
                                 }))
 
+                            
+                            <a href="#" id="excel-button" class="btn btn-default">
+                               <i class="fa fa-file-excel-o"></i> Excel</a>
+                            
+                            
                         } else {
                             <div class="alert alert-info text-center">
                                 <p>Nenhuma documentação encontrada!</p>
@@ -200,6 +202,14 @@
                 autoclose: true,
                 todayHighlight: true
             });
+
+            $('#excel-button').click(function () {
+                $('#excel').val('true');
+                $('#form-get').submit();
+                return false;
+
+            });
+
         });
     </script>
 }

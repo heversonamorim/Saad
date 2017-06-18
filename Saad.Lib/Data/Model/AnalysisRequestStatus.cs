@@ -55,6 +55,12 @@ namespace Saad.Lib.Data.Model {
             }
         }
 
+        public static AnalysisRequestStatus Cancelled {
+            get {
+                return new AnalysisRequestStatus("Cancelled", "Cancelado", true);
+            }
+        }
+
         public static AnalysisRequestStatus Disapproved {
             get {
                 return new AnalysisRequestStatus("Disapproved", "Reprovado", true);
@@ -88,6 +94,7 @@ namespace Saad.Lib.Data.Model {
             if (value == ApprovedWithReservationsLevel1.Value) return ApprovedWithReservationsLevel1;
             if (value == ApprovedWithReservationsLevel2.Value) return ApprovedWithReservationsLevel2;
             if (value == Disapproved.Value) return Disapproved;
+            if (value == Cancelled.Value) return Cancelled;
 
             throw new ArgumentOutOfRangeException("Status unknown");
         }

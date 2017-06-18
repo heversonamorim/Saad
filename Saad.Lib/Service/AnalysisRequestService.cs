@@ -214,7 +214,7 @@ namespace Saad.Lib.Service {
 
             if (request.Status.Equals(AnalysisRequestStatus.WaitingForDocuments)) {
                 var documentsCounts = kit.Documents.Count;
-                if (request.Customer.Id != 1) documentsCounts--;    //não contar a nota molon
+                if (request.Customer.Id != 1 && kit.Documents.Count(d =>d.Reference.Contains("MOLON")) > 0) documentsCounts--;    //não contar a nota molon
                 if (request.Documents.Count >= documentsCounts) {
                     request.Status = AnalysisRequestStatus.WaitingForAnalysis;
 
@@ -544,6 +544,20 @@ namespace Saad.Lib.Service {
             }
             
 
+        }
+
+        public void InsertEmployeeQuantity(int id, int employeeQtd) {
+            var request = Get(id);
+            request.EmployeeQuantity = employeeQtd;
+
+            context.SaveChanges();
+
+        }
+
+        public void Cancel(int id) {
+            var request = Get(id);
+            request.Status = AnalysisRequestStatus.Cancelled;
+            context.SaveChanges();
         }
     }
 }

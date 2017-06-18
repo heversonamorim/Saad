@@ -25,12 +25,19 @@
                             text = feedback.Feedback.Trim();
 
                     }
-                    
+
                     <textarea class="form-control" required id="type|@type.Type" name="type|@type.Type" placeholder="Insira seu parecer sobre @type.Type">@text</textarea>
                 </div>
             </div>
 
         }
+
+        <div class="form-group">
+            <label for="inputEmail3" class="col-sm-2 control-label">Quantidade Funcionários</label>
+            <div class="col-sm-10">
+                <input type="text" required id="employee-qty" name="employee-qty" class="form-control" placeholder="Inseir quantidade de funcionários"></input>
+            </div>
+        </div>
 
         <div class="form-group">
             <div class="col-sm-offset-2 col-sm-10">
@@ -40,5 +47,5 @@
             </div>
         </div>
 
-    }
-</div>
+        }
+    </div>

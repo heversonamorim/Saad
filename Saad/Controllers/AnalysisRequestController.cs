@@ -37,7 +37,7 @@ namespace Saad.Controllers {
 
         // GET: AnalysisRequest
         public ActionResult Index(string q, string status, string type, string service, string referenceDate, string endReferenceDate
-                                    , string work, string workDescription, int page = 1) {
+                                    , string work, string workDescription, string excel, int page = 1) {
 
             ViewBag.CurrentSearch = q;
             ViewBag.CurrentSearchStatus = status;
@@ -48,7 +48,75 @@ namespace Saad.Controllers {
             ViewBag.CurrentSearchWork = work;
             ViewBag.CurrentSearchWorkDescription = workDescription;
 
+            if (!string.IsNullOrWhiteSpace(excel)) {
+                return Excel(AnalysisRequestService.Search(q, status, type, service, referenceDate, endReferenceDate, work, workDescription, LoggedUser));
+            }
             return View(AnalysisRequestService.Search(q, status, type, service, referenceDate, endReferenceDate, work, workDescription, LoggedUser).ToPagedList(page, 10));
+        }
+
+        private ActionResult Excel(IEnumerable<AnalysisRequest> requests) {
+            using (ExcelPackage p = new ExcelPackage()) {
+                //Here setting some document properties
+
+                //Create a sheet
+                p.Workbook.Worksheets.Add("Resultado");
+                ExcelWorksheet ws = p.Workbook.Worksheets[1];
+                ws.Name = "Resultado"; //Setting Sheet's name
+                ws.Cells.Style.Font.Size = 11; //Default font size for whole sheet
+                ws.Cells.Style.Font.Name = "Calibri"; //Default Font name for whole sheet
+
+                var rowIndex = 1;
+
+                #region header
+
+                ws.Cells[rowIndex, 1].Value = "Código";
+                ws.Cells[rowIndex, 2].Value = "CNPJ";
+                ws.Cells[rowIndex, 3].Value = "Fornecedor";
+                ws.Cells[rowIndex, 4].Value = "Tipo";
+                ws.Cells[rowIndex, 5].Value = "Mês Referência";
+                ws.Cells[rowIndex, 6].Value = "Serviços";
+                ws.Cells[rowIndex, 7].Value = "Obra";
+                
+                for (int i = 1; i < 8; i++) {
+                    ws.Cells[1, i].Style.Font.Bold = true;
+                    ws.Cells[1, i].Style.Font.Color.SetColor(Color.White);
+
+                    ws.Cells[1, i].Style.Fill.PatternType = ExcelFillStyle.Solid;
+                    ws.Cells[1, i].Style.Fill.BackgroundColor.SetColor(Color.FromArgb(79, 129, 189));
+
+                    ws.Cells[1, i].Style.Border.Bottom.Style = ExcelBorderStyle.Thick;
+                    ws.Cells[1, i].Style.Border.Bottom.Color.SetColor(Color.FromArgb(87, 135, 192));
+                }
+
+                #endregion
+
+                rowIndex++;
+
+                #region first plan
+
+                foreach (var request in requests) {
+                    ws.Cells[rowIndex, 1].Value = request.Id;
+                    ws.Cells[rowIndex, 2].Value = request.Supplier.CNPJ;
+                    ws.Cells[rowIndex, 3].Value = request.Supplier.Name;
+                    ws.Cells[rowIndex, 4].Value = request.TypeName;
+                    ws.Cells[rowIndex, 5].Value = request.ReferenceDate.GetValueOrDefault().ToString("MM/yyyy");
+                    ws.Cells[rowIndex, 6].Value = string.Join(" | ", request.WorkDescriptions.Select(w => w.WorkDescription.Name));
+                    ws.Cells[rowIndex, 7].Value = request.Work == null ? request.ServiceLocal : request.Work.Name;
+
+                    rowIndex++;
+
+                }
+
+               
+                #endregion
+
+                Byte[] bin = p.GetAsByteArray();
+
+                return File(bin, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+
+            }
+
+
         }
 
         [Authorize(Roles = "Customer, Admin")]
@@ -87,6 +155,7 @@ namespace Saad.Controllers {
             foreach (var id in model.WorkDescriptions) {
                 model.Request.WorkDescriptions.Add(new AnalysisRequestWorkDescriptions() { Id = id });
             }
+            model.Request.ReferenceDate = DateTime.Parse("01/" + model.ReferenceDate, new CultureInfo("pt-BR"));
 
             AnalysisRequestService.CreateRequest(model.Request, LoggedUser);
 
@@ -313,6 +382,11 @@ namespace Saad.Controllers {
 
             }
 
+            int employeeQtd = 0;
+            if (int.TryParse(form["employee-qty"] as string, out employeeQtd)) {
+                AnalysisRequestService.InsertEmployeeQuantity(id, employeeQtd);
+            }
+
             try {
                 AnalysisRequestService.TryToMoveForwardOnWorkflow(id, LoggedUser);
             } catch (Exception ex) {
@@ -342,6 +416,20 @@ namespace Saad.Controllers {
             return Content("");
 
         }
+
+        public ActionResult Cancel(int id) {
+            try {
+                AnalysisRequestService.Cancel(id);
+
+            } catch (Exception) {
+                Response.StatusCode = 500;
+
+            }
+
+            return Content("");
+
+        }
+
 
         public ActionResult GetLastRequest(string cnpj) {
             var request = AnalysisRequestService.GetHistory(cnpj, 1);
